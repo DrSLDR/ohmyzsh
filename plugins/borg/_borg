@@ -5,8 +5,8 @@ function _borg-benchmark-crud {
     local -a arguments
 
     arguments+=(
-        "1:path to repository to benchmark against:_files"
-        "2:path where benchmarking files will be generated:_files"
+        "1:path to repository to benchmark against:_directories"
+        "2:path where benchmarking files will be generated:_directories"
     )
 
     _arguments $arguments[@] && ret=0
