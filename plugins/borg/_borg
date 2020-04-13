@@ -1,5 +1,34 @@
 #compdef borg
 
+function _borg-benchmark {
+    local curcontext=$curcontext state line ret=1
+    local -a arguments
+
+    arguments+=(
+        ": :->command"
+        "*:: :->option-or-keyword"
+    )
+
+    _arguments -C $arguments[@] && ret=0
+
+    case $state in
+        (command)
+            local -a commands
+
+            commands+=(
+                "crud:Create, extract, update, delete benchmark"
+            )
+
+            _describe -t commands command commands && ret=0
+            ;;
+        (option-or-keyword)
+            echo "foo"
+            ;;
+    esac
+
+    return ret
+}
+
 function _borg {
     local curcontext=$curcontext state line ret=1
     local -a arguments
@@ -66,7 +95,8 @@ function _borg {
 
             case $line[1] in
                 (benchmark)
-                    echo "lolno"
+                    _borg-benchmark && ret=0
+                    ;;
             esac
             ;;
     esac
