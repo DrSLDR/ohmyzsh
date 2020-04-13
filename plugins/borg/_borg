@@ -26,6 +26,7 @@ function _borg {
         "--debug-profile[Write execution profile in Borg format into FILE.]:file to write profile to:_files"
         "--rsh[Use this command to connect to the \"borg serve\" process (default: \"ssh\")]:remote shell command:()"
         ": :->command"
+        "*:: :->option-or-keyword"
     )
 
     _arguments -w -s -S -C $arguments[@] && ret=0
@@ -59,6 +60,14 @@ function _borg {
             )
 
             _describe -t commands command commands && ret=0
+            ;;
+        (option-or-keyword)
+            curcontext=${curcontext%:*}-$line[1]:
+
+            case $line[1] in
+                (benchmark)
+                    echo "lolno"
+            esac
             ;;
     esac
 
