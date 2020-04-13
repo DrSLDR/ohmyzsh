@@ -120,8 +120,8 @@ function _borg {
     local logs="--critical --error --warning --debug --info -v --verbose"
 
     arguments+=(
-        "(-)"{-h,--help}"[Show help and exit]"
-        "(-)-V[Show Borg version and exit]"
+        "(: -)"{-h,--help}"[Show help and exit]"
+        "(: -)-V[Show Borg version and exit]"
         "($logs)--critical[Work on log level CRITICAL]"
         "($logs)--error[Work on log level ERROR]"
         "($logs)--warning[Work on log level WARNING (default)]"
