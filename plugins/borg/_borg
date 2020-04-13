@@ -1,1 +1,34 @@
 #compdef borg
+
+function _borg {
+    local curcontext=$curcontext state line ret=1
+    local -a arguments
+
+    local logs="--critical --error --warning --debug --info -v --verbose"
+
+    arguments+=(
+        "(-)"{-h,--help}"[Show help and exit]"
+        "(-)-V[Show Borg version and exit]"
+        "($logs)--critical[Work on log level CRITICAL]"
+        "($logs)--error[Work on log level ERROR]"
+        "($logs)--warning[Work on log level WARNING (default)]"
+        "($logs)"{--info,-v,--verbose}"[Work on log level INFO]"
+        "($logs)--debug[Enable debug output; log level DEBUG]"
+        "(-p --progress)"{-p,--progress}"[Show progress]"
+        "--log-json[Output one JSON object per log line instead of formatted text]"
+        "--show-version[Show/log borg version]"
+        "--show-rc[Show/log returncode]"
+        "--consider-part-files[treat part files like normal files (e.g. to list/extract them)]"
+        "--lock-wait[Wait at most SECONDS for acquiring a repository/cache lock (default 1)]:seconds:()"
+        "--umask[Set umask to M (local and remote; default 0077)]:umask value, e.g. 0077:()"
+        "--remote-path[Use PATH as borg executable on the remote (default: \"borg\")]:path on remote:()"
+        "--remote-ratelimit[Set remote network upload rate limit in kiByte/s (default: 0=unlimited)]:upload rate:()"
+        "--debug-profile[Write execution profile in Borg format into FILE.]:file to write profile to:_files"
+        "--rsh[Use this command to connect to the \"borg serve\" process (default: \"ssh\")]:remote shell command:()"
+        ": :->command"
+    )
+
+    _arguments -w -s -S -C $arguments[@] && ret=0
+
+    return ret
+}
