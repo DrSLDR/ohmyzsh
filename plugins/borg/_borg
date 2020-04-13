@@ -1,5 +1,23 @@
 #compdef borg
 
+#TODO: completions left to implement
+# break-lock
+# check
+# config
+# delete
+# diff
+# export-tar
+# info
+# list
+# mount
+# prune
+# recreate
+# rename
+# serve
+# unmount
+# upgrade
+# with-lock
+
 function _borg-benchmark-crud {
     local curcontext=$curcontext state line ret=1
     local -a arguments
