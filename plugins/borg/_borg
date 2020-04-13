@@ -49,6 +49,34 @@ function _borg-benchmark {
     return ret
 }
 
+function _borg-key {
+    local curcontext=$curcontext state line ret=1
+    local -a arguments
+
+    arguments+=(
+        ": :->command"
+        "*:: :->option-or-keyword"
+    )
+
+    _arguments -C $arguments[@] && ret=0
+
+    case $state in
+        (command)
+            local -a commands
+
+            commands+=(
+                "change-passphrase:Change passphrase of a repository encryption key"
+                "export:Export a repository key"
+                "import:Restore a previously exported repository key"
+            )
+
+            _describe -t commands command commands && ret=0
+            ;;
+    esac
+
+    return ret
+}
+
 function _borg {
     local curcontext=$curcontext state line ret=1
     local -a arguments
@@ -116,6 +144,9 @@ function _borg {
             case $line[1] in
                 (benchmark)
                     _borg-benchmark && ret=0
+                    ;;
+                (key)
+                    _borg-key && ret=0
                     ;;
             esac
             ;;
