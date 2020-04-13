@@ -129,6 +129,31 @@ function _borg-create {
     return ret
 }
 
+function _borg-extract {
+    local curcontext=$curcontext state line ret=1
+    local -a arguments
+
+    arguments+=(
+        "(-n --dry-run)"{-n,--dry-run}"[Do not write any files]"
+        "--list[Output verbose list of items]"
+        "--numeric-owner[Only obey numeric user and group identifiers]"
+        "--nobsdflags[Do not extract/set bsdflags (e.g. NODUMP, IMMUTABLE)]"
+        "--stdout[Write all extracted data to stdout]"
+        "--sparse[Create holes in output sparse file from all-zero chunks]"
+        "(-e --exclude)"{-e,--exclude}"[Exclude paths matching PATTERN]:exclusion pattern (see \"borg help pattern\"):()"
+        "--exclude-from[Read exclude patterns from EXCLUDEFILE, one per line]:path to exclusion file:_files"
+        "--pattern[EXPERIMENTAL: include/exclude paths matching PATTERN]:pattern:()"
+        "--pattern-from[EXPERIMENTAL: read include/exclude patterns from PATTERNFILE, one per line]:path to patternfile:_files"
+        "--strip-components[Remove the specified number of leading path elements. Paths with fewer elements will be silently skipped.]:number of components to strip:()"
+        "1:name of archive to extract:_directories"
+        "*:paths to extract (patterns are supported):_files"
+    )
+
+    _arguments -w -s $arguments[@] && ret=0
+
+    return ret
+}
+
 function _borg-init {
     local curcontext=$curcontext state line ret=1
     local -a arguments
@@ -309,6 +334,9 @@ function _borg {
                     ;;
                 (create)
                     _borg-create && ret=0
+                    ;;
+                (extract)
+                    _borg-extract && ret=0
                     ;;
                 (init)
                     _borg-init && ret=0
