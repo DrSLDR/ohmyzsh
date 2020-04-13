@@ -30,5 +30,37 @@ function _borg {
 
     _arguments -w -s -S -C $arguments[@] && ret=0
 
+    case $state in
+        (command)
+            local -a commands
+
+            commands+=(
+                "init:Initialize a new repository"
+                "create:Create a new archive"
+                "extract:Extract the contents of an archive"
+                "check:Verifies consistency of a repository and its archives"
+                "rename:Renames an archive in a repository"
+                "list:Lists contents of a repository or archive"
+                "diff:Finds differences between archives"
+                "delete:Deletes an archive or an entire repository (and its cache)"
+                "prune:Prunes a repository"
+                "info:Shows info about a repository or archive"
+                "mount:Mounts an archive as a FUSE filesystem"
+                "unmount:Unmounts a FUSE filesystem mounted with \"borg mount\""
+                "key:Keyword for key-related functions"
+                "upgrade:Upgrade a local Borg repository"
+                "recreate:EXPERIMENTAL: Recreates contents of existing archives"
+                "export-tar:Creates a tarball from an archive"
+                "serve:Starts repository server process. Not usually used manually."
+                "config:Gets and sets options in local repository and cache config files"
+                "with-lock:Executes another command with the repository lock held"
+                "break-lock:Breaks the repository and cache locks"
+                "benchmark:Keyword for the benchmark function"
+            )
+
+            _describe -t commands command commands && ret=0
+            ;;
+    esac
+
     return ret
 }
