@@ -49,6 +49,86 @@ function _borg-benchmark {
     return ret
 }
 
+function _borg-create {
+    local curcontext=$curcontext state line ret=1
+    local -a arguments
+
+    # Todo: several characters in a row do not autocomplete
+    local status_chars="((\
+        A\:\"Regular file, added\" \
+        M\:\"Regular file, modified\" \
+        U\:\"Regular file, unchanged\" \
+        E\:\"Regular file, errored (failed to access/read)\" \
+        d\:\"Directory\" \
+        b\:\"Block device\" \
+        c\:\"Char device\" \
+        h\:\"Regular file, hardlink (already seen)\" \
+        s\:\"Symlink\" \
+        f\:\"Fifo\" \
+        i\:\"Data read from stdin\" \
+        -\:\"Not backed up; dry run\" \
+        x\:\"Not backed up; excluded\" \
+        \?\:\"Missing status (file this as a bug!)\" \
+        ))"
+
+    local cache_modes="((\
+        ctime,size,inode\:\"Default\" \
+        mtime,size,inode\:\"Default behaviour of borg versions older than 1.1.0rc4\" \
+        ctime,size\:\"Ignore the inode number\" \
+        mtime,size\:\"Ignore the inode number\" \
+        rechunk,ctime\:\"All files are considered modified - rechunk, cache ctime\" \
+        rechunk,mtime\:\"All files are considered modified - rechunk, cache mtime\" \
+        disabled\:\"Disable the cache, all files considered modified - rechunk\" \
+        ))"
+
+    local compressions="((\
+        none\:\"Do not compress\" \
+        lz4\:\"Very fast, very poor compression (default)\" \
+        zstd\:\"Modern wide-range algorithm. Can take compression level 1-22 (e.g. zstd,5; default\\: 3)\" \
+        zlib\:\"Medium speed, medium compression. Can take compression level 0-9 (e.g. zlib,5; default\\: 6; level 0 is pointless)\" \
+        lzma\:\"Low speed, high compression. Can take compression level 0-9 (e.g. lzma,5; default\\: 6; level >6 is wasteful and pointless)\" \
+        auto\:\"Heuristic choice; uses \\\"none\\\" for incompressible data, given algorithm otherwise (e.g. auto,lzma or auto,zstd,9)\"
+        ))"
+
+    arguments+=(
+        "(-s --stats -n --dry-run)"{-n,--dry-run}"[Do not create an archive]"
+        "(-s --stats -n --dry-run)"{-s,--stats}"[Print statistics of created archive]"
+        "--list[Output verbose list of items]"
+        "--json[Output stats as JSON. Implies --stats.]"
+        "--no-cache-sync[EXPERIMENTAL: do not synchronize the cache. Implies not using the files cache.]"
+        "--no-files-cache[EXPERIMENTAL: do not load/update the cache used to detect unchanged files]"
+        "--stdin-name[use NAME in archive for stdin data (default: \"stdin\")]:name:()"
+        "--filter=[Only display items with the given status characters]:status characters:$status_chars"
+        "(-e --exclude)"{-e,--exclude}"[Exclude paths matching PATTERN]:exclusion pattern (see \"borg help pattern\"):()"
+        "--exclude-from[Read exclude patterns from EXCLUDEFILE, one per line]:path to exclusion file:_files"
+        "--pattern[EXPERIMENTAL: include/exclude paths matching PATTERN]:pattern:()"
+        "--pattern-from[EXPERIMENTAL: read include/exclude patterns from PATTERNFILE, one per line]:path to patternfile:_files"
+        "--exclude-caches[Exclude directories that contain a CACHEDIR.TAG file]"
+        "--exclude-if-present[Exclude directories that are tagged by containing a filesystem object with the given NAME]:exclusion tag name:()"
+        "(--keep-exclude-tags --keep-tag-files)"{--keep-exclude-tags,--keep-tag-files}"[if tag objects are specified with --exclude-if-present, include the tag objects themselves in the archive]"
+        "--exclude-nodump[Exclude files flagged NODUMP]"
+        "(-x --one-file-system)"{-x,--one-file-system}"[Stay in the same file system; do not store mount points of other file systems]"
+        "--numeric-owner[Only store numeric user and group identifiers]"
+        "--noatime[Do not store atime]"
+        "--noctime[Do not store ctime]"
+        "--nobsdflags[Do not read and store bsdflags (e.g. NODUMP, IMMUTABLE)]"
+        "--ignore-inode[Ignore inode data in the cache used to detect unchanged files]"
+        "--files-cache[Operate the cache in MODE]:cache mode:$cache_modes"
+        "--read-special[Open and read block and char device files as well as FIFOs, and symlinks to them, as if they were regular files]"
+        "--comment[Add a comment to the archive]:comment:()"
+        "--timestamp[Manually specify the archive creation date/time (UTC, yyyy-mm-ddThh:mm:ss format) or give a reference file/directory]:timestamp:()"
+        "(-c --checkpoint-intervals)"{-c,--checkpoint-intervals}"[Write checkpoint every SECONDS seconds (Default: 1800)]:seconds:()"
+        "--chunker-params[specify the chunker parameters: CHUNK_MIN_EXP, CHUNK_MAX_EXP, HASH_MASK_BITS, HASH_WINDOW_SIZE (default: 19,23,21,4095)]:chunker params:()"
+        "(-C --compression)"{-C,--compression}"[Select compression algorithm (default: lz4)]:compression algorithm:$compressions"
+        "1:name of archive to create:_directories"
+        "*:paths to archive:_files"
+    )
+
+    _arguments -w -s $arguments[@] && ret=0
+
+    return ret
+}
+
 function _borg-init {
     local curcontext=$curcontext state line ret=1
     local -a arguments
@@ -226,6 +306,9 @@ function _borg {
             case $line[1] in
                 (benchmark)
                     _borg-benchmark && ret=0
+                    ;;
+                (create)
+                    _borg-create && ret=0
                     ;;
                 (init)
                     _borg-init && ret=0
