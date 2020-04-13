@@ -49,6 +49,14 @@ function _borg-benchmark {
     return ret
 }
 
+function _borg-key-change-passphrase {
+    local curcontext=$curcontext state line ret=1
+
+    _arguments "1:path to repository:_directories" && ret=0
+
+    return ret
+}
+
 function _borg-key {
     local curcontext=$curcontext state line ret=1
     local -a arguments
@@ -71,6 +79,15 @@ function _borg-key {
             )
 
             _describe -t commands command commands && ret=0
+            ;;
+        (option-or-keyword)
+            curcontext=${curcontext%:*}-$line[1]:
+
+            case $line[1] in
+                (change-passphrase)
+                    _borg-key-change-passphrase && ret=0
+                    ;;
+            esac
             ;;
     esac
 
