@@ -1,5 +1,19 @@
 #compdef borg
 
+function _borg-benchmark-crud {
+    local curcontext=$curcontext state line ret=1
+    local -a arguments
+
+    arguments+=(
+        "1:path to repository to benchmark against:_files"
+        "2:path where benchmarking files will be generated:_files"
+    )
+
+    _arguments $arguments[@] && ret=0
+
+    return ret
+}
+
 function _borg-benchmark {
     local curcontext=$curcontext state line ret=1
     local -a arguments
@@ -22,7 +36,13 @@ function _borg-benchmark {
             _describe -t commands command commands && ret=0
             ;;
         (option-or-keyword)
-            echo "foo"
+            curcontext=${curcontext%:*}-$line[1]
+
+            case $line[1] in
+                (crud)
+                    _borg-benchmark-crud && ret=0
+                    ;;
+            esac
             ;;
     esac
 
