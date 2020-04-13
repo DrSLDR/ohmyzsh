@@ -57,6 +57,22 @@ function _borg-key-change-passphrase {
     return ret
 }
 
+function _borg-key-export {
+    local curcontext=$curcontext state line ret=1
+    local -a arguments
+
+    arguments+=(
+        "(-)--paper[Create an export suitable for printing and later type-in]"
+        "(-)--qr-html[Create an html file suitable for printing and later type-in or qr scan]"
+        "1:path to repository:_directories"
+        "2:path to write the key to:_files"
+    )
+
+    _arguments $arguments[@] && ret=0
+
+    return ret
+}
+
 function _borg-key {
     local curcontext=$curcontext state line ret=1
     local -a arguments
@@ -86,6 +102,9 @@ function _borg-key {
             case $line[1] in
                 (change-passphrase)
                     _borg-key-change-passphrase && ret=0
+                    ;;
+                (export)
+                    _borg-key-export && ret=0
                     ;;
             esac
             ;;
