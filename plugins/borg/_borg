@@ -73,6 +73,21 @@ function _borg-key-export {
     return ret
 }
 
+function _borg-key-import {
+    local curcontext=$curcontext state line ret=1
+    local -a arguments
+
+    arguments+=(
+        "(* 2)--paper[Interactively import from a backup done with --paper]"
+        "1:path to repository:_directories"
+        "2:path to file to read (use \"-\" to read from stdin):_files"
+    )
+
+    _arguments $arguments[@] && ret=0
+
+    return ret
+}
+
 function _borg-key {
     local curcontext=$curcontext state line ret=1
     local -a arguments
@@ -105,6 +120,9 @@ function _borg-key {
                     ;;
                 (export)
                     _borg-key-export && ret=0
+                    ;;
+                (import)
+                    _borg-key-import && ret=0
                     ;;
             esac
             ;;
